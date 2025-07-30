@@ -29,4 +29,4 @@ jobs:
       run: cp ./1-integ-tests/.env.example ./1-integ-tests/.env
 
     - name: Run integration script
-      run: cd 1-integ-tests && npm run test:integration
+      run: cd 1-integ-tests && npm run test-integration
