@@ -10,6 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    # Treat '1-integ-tests' as our project root for every `run:` step
+    defaults:
+      run:
+        working-directory: 1-integ-tests
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -19,20 +24,20 @@ jobs:
 
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1
-        # installs the latest Compose binary if missing :contentReference[oaicite:0]{index=0}
 
-      - name: Docker Compose up
-        run: docker compose -f 1-integ-tests/docker-compose.yml up -d
+      - name: Bring up services
+        run: |
+          docker compose up -d
 
-      - name: Copy .env.example to .env
-        run: cp 1-integ-tests/.env.example 1-integ-tests/.env
+      - name: Copy environment file
+        run: cp .env.example .env
 
       - name: Install dependencies
-        run: cd 1-integ-tests && npm install
+        run: npm install
 
-      - name: Run integration script
-        run: cd 1-integ-tests && npm run test-integration
+      - name: Run integration tests
+        run: npm run test-integration
 
-      - name: Tear down Compose services
+      - name: Tear down services
         if: always()
-        run: docker compose -f 1-integ-tests/docker-compose.yml down
+        run: docker compose down
