@@ -1,3 +1,5 @@
+# <repo-root>/.github/workflows/test.yml
+
 name: CI/CD Pipeline
 
 on:
@@ -10,14 +12,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    # Treat '1-integ-tests' as our project root for every `run:` step
+    # Treat `1-integ-tests/` as project root for all `run:` steps
     defaults:
       run:
         working-directory: 1-integ-tests
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -26,14 +28,13 @@ jobs:
         uses: docker/setup-compose-action@v1
 
       - name: Bring up services
-        run: |
-          docker compose up -d
+        run: docker compose up -d
 
-      - name: Copy environment file
+      - name: Copy .env.example → .env
         run: cp .env.example .env
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run integration tests
         run: npm run test-integration
