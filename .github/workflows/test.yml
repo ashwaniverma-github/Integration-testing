@@ -43,7 +43,7 @@ jobs:
 
       # 8) run your integration script
       - name: Run integration tests
-        run: ./scripts/run-integration.sh
+        run: bash ./scripts/run-integration.sh
 
       # 9) always tear down your containers
       - name: Tear down services
