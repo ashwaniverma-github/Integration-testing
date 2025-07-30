@@ -11,16 +11,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # 1) checkout your code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
+      # 2) (debug) dump tree so we know where files actually are
+      - name: Dump repository tree
+        run: |
+          echo "GITHUB_WORKSPACE = $GITHUB_WORKSPACE"
+          ls -R .
+
+      # 3) set up Docker Buildx (if you need buildx features)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # 4) ensure `docker compose` (v2) is available
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1
 
-      - name: Make integration scripts executable
+      # 5) make sure your helper scripts can run
+      - name: Make scripts executable
         run: chmod +x ./scripts/run-integration.sh ./scripts/wait-for-it.sh
 
+      # 6) copy your sample env into place so DATABASE_URL is defined
+      - name: Copy .env.example → .env
+        run: cp .env.example .env
+
+      # 7) install all Node deps (including Vitest & Prisma)
+      - name: Install dependencies
+        run: npm ci
+
+      # 8) run your orchestration script
       - name: Run integration script
         run: bash ./scripts/run-integration.sh
+
+      # always bring everything down, even on failure
+      - name: Tear down services
+        if: always()
+        run: docker compose down
