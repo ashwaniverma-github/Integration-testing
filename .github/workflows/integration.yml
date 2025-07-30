@@ -19,11 +19,12 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Set up Docker Compose
-      uses: docker/setup-qemu-action@v2
-
-    - name: Ensure Docker Compose is available
-      run: docker-compose version
+    - name: Docker Compose up
+    uses: docker/compose-action@v3
+    with:
+      compose-file: ./1-integ-tests/docker-compose.yml
+      up: true
+      down: false
 
     - name: Copy .env.example to .env
       run: cp ./1-integration-test/.env.example ./1-integration-test/.env
